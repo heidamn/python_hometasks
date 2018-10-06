@@ -13,9 +13,9 @@ def encrypt_caesar(plaintext):
     """
     ciphertext = ''
     n = 0
-    for i in range(len(plaintext)):
-        n = ord(plaintext[i])
-        if 'a' <= plaintext[i] <= 'z' or 'A' <= plaintext[i] <= 'Z':
+    for i in plaintext:
+        n = ord(i)
+        if 'a' <= i <= 'z' or 'A' <= i <= 'Z':
             n += 3
             if ord('Z') < n < ord("a") or n > ord('z'):
                 n -= 26
@@ -38,9 +38,9 @@ def decrypt_caesar(ciphertext):
     """
     plaintext = ''
     n = 0
-    for i in range(len(ciphertext)):
-        n = ord(ciphertext[i])
-        if 'a' <= ciphertext[i] <= 'z' or 'A' <= ciphertext[i] <= 'Z':
+    for i in ciphertext:
+        n = ord(i)
+        if 'a' <= i <= 'z' or 'A' <= i <= 'Z':
             n -= 3
             if ord('Z') < n < ord("a") or n < ord('A'):
                 n += 26
