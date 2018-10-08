@@ -18,7 +18,7 @@ def encrypt_vigenere(plaintext, keyword):
             n += ord(keyword[i]) - ord('a')
             if (ord('Z') < n and lett <= 'Z') or n > ord('z'):
                 n -= 26
-        ciphertext+=chr(n)
+        ciphertext += chr(n)
 
 
     return ciphertext
@@ -35,5 +35,15 @@ def decrypt_vigenere(ciphertext, keyword):
     >>> decrypt_vigenere("LXFOPVEFRNHR", "LEMON")
     'ATTACKATDAWN'
     """
-    # PUT YOUR CODE HERE
+    plaintext = ''
+    keyword *= len(ciphertext)
+    keyword=keyword.lower()
+    for i,lett in enumerate(ciphertext):
+        n = ord(lett)
+        if 'a' <= lett <= 'z' or 'A' <= lett <= 'Z':
+            n -= ord(keyword[i]) - ord('a')
+            if (ord('a') > n and lett >= 'a') or n < ord('A'):
+                n += 26
+        plaintext += chr(n)
+
     return plaintext
