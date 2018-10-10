@@ -12,7 +12,12 @@ def is_prime(n):
     >>> is_prime(8)
     False
     """
-   
+    for i in range(2, n//2):
+        if n % i ==0:
+            print('False')
+            break
+    else:
+        print('True')
     pass
 
 
