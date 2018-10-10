@@ -29,8 +29,21 @@ def gcd(a, b):
     3
     >>> gcd(3, 7)
     1
+    >>> gcd(2, 48)
+    2
+    >>> gcd(33, 33)
+    33
+    >>> gcd(11111111, 2)
+    1
     """
-    
+    while a != 0 or b != 0:
+        if a > b:
+            a -= b
+        elif a < b:
+            b -= a
+        else:
+            print (a)
+            break
     pass
 
 
@@ -52,10 +65,10 @@ def generate_keypair(p, q):
     elif p == q:
         raise ValueError('p and q cannot be equal')
 
-    # n = pq
+    n = p * q
   
 
-    # phi = (p-1)(q-1)
+    phi = (p - 1) * (q - 1)
     
 
     # Choose an integer e such that e and phi(n) are coprime
