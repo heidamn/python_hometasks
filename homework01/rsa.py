@@ -14,10 +14,10 @@ def is_prime(n):
     """
     for i in range(2, n//2):
         if n % i ==0:
-            print('False')
+            return(False)
             break
     else:
-        print('True')
+        return(True)
     pass
 
 
@@ -36,14 +36,11 @@ def gcd(a, b):
     >>> gcd(11111111, 2)
     1
     """
-    while a != 0 or b != 0:
-        if a > b:
-            a -= b
-        elif a < b:
-            b -= a
-        else:
-            print (a)
-            break
+    if a < b:
+        b, a = a, b
+    while a % b != 0:
+        a, b = b, a % b
+    return(b)
     pass
 
 
@@ -55,7 +52,17 @@ def multiplicative_inverse(e, phi):
     >>> multiplicative_inverse(7, 40)
     23
     """
-  
+    #(d * e) % phi = 1
+    fpart=[]
+    while phi % e != 0:
+        fpart.append(phi//e)
+        phi, e = e, phi % e
+    fpart.reverse()
+    x = 0
+    y = 1
+    for i in fpart:
+        x, y = y, x - y * i
+    return(y % phi)
     pass
 
 
