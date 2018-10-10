@@ -13,7 +13,7 @@ def is_prime(n):
     False
     """
     for i in range(2, n//2):
-        if n % i ==0:
+        if n % i == 0:
             return(False)
             break
     else:
@@ -53,7 +53,7 @@ def multiplicative_inverse(e, phi):
     23
     """
     #(d * e) % phi = 1
-    fpart=[]
+    fpart = []
     while phi % e != 0:
         fpart.append(phi//e)
         phi, e = e, phi % e
@@ -73,14 +73,9 @@ def generate_keypair(p, q):
         raise ValueError('p and q cannot be equal')
 
     n = p * q
-  
-
     phi = (p - 1) * (q - 1)
-    
-
     # Choose an integer e such that e and phi(n) are coprime
     e = random.randrange(1, phi)
-
     # Use Euclid's Algorithm to verify that e and phi(n) are comprime
     g = gcd(e, phi)
     while g != 1:
