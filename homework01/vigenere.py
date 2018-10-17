@@ -19,8 +19,6 @@ def encrypt_vigenere(plaintext, keyword):
             if (ord('Z') < n and lett <= 'Z') or n > ord('z'):
                 n -= 26
         ciphertext += chr(n)
-
-
     return ciphertext
 
 
@@ -45,5 +43,4 @@ def decrypt_vigenere(ciphertext, keyword):
             if (ord('a') > n and lett >= 'a') or n < ord('A'):
                 n += 26
         plaintext += chr(n)
-
     return plaintext

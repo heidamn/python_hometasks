@@ -14,12 +14,9 @@ def is_prime(n):
     """
     for i in range(2, n//2):
         if n % i == 0:
-            return(False)
-            break
+            return False
     else:
-        return(True)
-    pass
-
+        return True
 
 def gcd(a, b):
     """
@@ -41,7 +38,6 @@ def gcd(a, b):
     while a % b != 0:
         a, b = b, a % b
     return(b)
-    pass
 
 
 def multiplicative_inverse(e, phi):
@@ -62,8 +58,7 @@ def multiplicative_inverse(e, phi):
     y = 1
     for i in fpart:
         x, y = y, x - y * i
-    return(y % phi)
-    pass
+    return y % phi
 
 
 def generate_keypair(p, q):
@@ -87,7 +82,7 @@ def generate_keypair(p, q):
 
     # Return public and private keypair
     # Public key is (e, n) and private key is (d, n)
-    return ((e, n), (d, n))
+    return (e, n), (d, n)
 
 
 def encrypt(pk, plaintext):
