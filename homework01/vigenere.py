@@ -22,6 +22,7 @@ def encrypt_vigenere(plaintext, keyword):
     return ciphertext
 
 
+
 def decrypt_vigenere(ciphertext, keyword):
     """
     Decrypts a ciphertext using a Vigenere cipher.

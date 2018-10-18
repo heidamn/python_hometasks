@@ -24,6 +24,7 @@ def encrypt_caesar(plaintext, shift):
     return ciphertext
 
 
+
 def decrypt_caesar(ciphertext, shift):
     """
     Decrypts a ciphertext using a Caesar cipher.
