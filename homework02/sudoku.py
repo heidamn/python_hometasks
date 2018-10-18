@@ -25,14 +25,15 @@ def group(values, n):
     >>> group([1,2,3,4,5,6,7,8,9], 3)
     [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
     """
-    square=[]
+    values1=values
+    values=[]
     line=[]
     for i in range (n):
         for j in range (n*i, n*(i+1)):
-            line.append(values[j])
-        square.append(line)
+            line.append(values1[j])
+        values.append(line)
         line=[]
-    return square
+    return values
 
 
 def get_row(values, pos):
@@ -45,7 +46,8 @@ def get_row(values, pos):
     >>> get_row([['1', '2', '3'], ['4', '5', '6'], ['.', '8', '9']], (2, 0))
     ['.', '8', '9']
     """
-    pass
+    row = values[pos[0]]
+    return row
 
 
 def get_col(values, pos):
@@ -58,7 +60,10 @@ def get_col(values, pos):
     >>> get_col([['1', '2', '3'], ['4', '5', '6'], ['.', '8', '9']], (0, 2))
     ['3', '6', '9']
     """
-    pass
+    col=[]
+    for i in values:
+    	col.append(i[pos[1]])
+    return col
 
 
 def get_block(values, pos):
@@ -72,7 +77,11 @@ def get_block(values, pos):
     >>> get_block(grid, (8, 8))
     ['2', '8', '.', '.', '.', '5', '.', '7', '9']
     """
-    pass
+    block=[]
+    for i in range(pos[0]//3*3, (pos[0]//3+1)*3):
+    	for j in range(pos[1]//3*3, (pos[1]//3+1)*3):
+    		block.append(values[i][j])
+    return block
 
 
 def find_empty_positions(grid):
