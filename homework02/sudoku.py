@@ -152,8 +152,22 @@ def solve(grid):
 def check_solution(solution):
     """ Если решение solution верно, то вернуть True, в противном случае False """
     # TODO: Add doctests with bad puzzles
-    pass
-
+    for i in range(9):
+        row=get_row(solution,(i,0)) 
+        for num in row:
+            if row.count(num)>1:
+                return False
+    for i in range(9):
+        col=get_col(solution,(0,i))
+        for num in col:
+            if col.count(num)>1:
+                return False
+    for i in range(9):
+        block=get_block(solution,(i//3*3,i%3*3))
+        for num in block:
+            if block.count(num)>1:
+                return False
+    return True
 
 def generate_sudoku(N):
     """ Генерация судоку заполненного на N элементов
@@ -185,5 +199,5 @@ if __name__ == '__main__':
         grid = read_sudoku(fname)
         display(grid)
         solution = solve(grid)
-        print (solution)
-        #display(solution)
+        display(solution)
+        
