@@ -1,4 +1,6 @@
 import random
+import time
+import multiprocessing
 def read_sudoku(filename):
     """ Прочитать Судоку из указанного файла """
     digits = [c for c in open(filename).read() if c in '123456789.']
@@ -209,7 +211,10 @@ def generate_sudoku(N):
 if __name__ == '__main__':
     for fname in ['puzzle1.txt', 'puzzle2.txt', 'puzzle3.txt']:
         grid = read_sudoku(fname)
+        start = time.time()
         display(grid)
         solution = solve(grid)
+        end = time.time()
+        print(f'{fname}: {end-start}')
         display(solution)
         
