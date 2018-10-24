@@ -25,15 +25,7 @@ def group(values, n):
     >>> group([1,2,3,4,5,6,7,8,9], 3)
     [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
     """
-    values1 = values
-    values = []
-    line = []
-    for i in range(n):
-        for j in range(n*i, n*(i+1)):
-            line.append(values1[j])
-        values.append(line)
-        line = []
-    return values
+    return [[values[el + col] for el in range(n)] for col in range(0, n**2, n)]
 
 def get_row(values, pos):
     """ Возвращает все значения для номера строки, указанной в pos
@@ -45,8 +37,7 @@ def get_row(values, pos):
     >>> get_row([['1', '2', '3'], ['4', '5', '6'], ['.', '8', '9']], (2, 0))
     ['.', '8', '9']
     """
-    row = values[pos[0]]
-    return row
+    return values[pos[0]]
 
 def get_col(values, pos):
     """ Возвращает все значения для номера столбца, указанного в pos
@@ -58,10 +49,8 @@ def get_col(values, pos):
     >>> get_col([['1', '2', '3'], ['4', '5', '6'], ['.', '8', '9']], (0, 2))
     ['3', '6', '9']
     """
-    col = []
-    for num in values:
-        col.append(num[pos[1]])
-    return col
+    row, col = pos 
+    return [lin[col] for lin in values]
 
 def get_block(values, pos):
     """ Возвращает все значения из квадрата, в который попадает позиция pos
@@ -128,18 +117,18 @@ def solve(grid):
             3.1. Поместить это значение на эту позицию
             3.2. Продолжить решать оставшуюся часть пазла
     """
-    empty_pos = find_empty_positions(grid)  # находим пустую позицию
-    if not empty_pos:  # если ее нет - возвращаем решенное судоку(причем возврат будет до начала рекурсии)
+    empty_pos = find_empty_positions(grid)
+    if not empty_pos:
         return grid
-    row, col = empty_pos  # для удобства находим ряд и столбец пустой ячейки
-    if find_possible_values(grid, empty_pos):  # если есть возможные значения - уйти в рекурсию и дальнейшую подстановку
-        for i in find_possible_values(grid, empty_pos):  # пока не найдем значение, для которого остальной пазл не сложится
-            grid[row][col] = i  # добавляем значение к ячейке
-            solution = solve(grid)  # решаем оставшийся пазл (рекурсия)
-            if solution:  # если нашлось решение оставшихся ячеек, возвращаем его в начало рекурсии, если ни для одного значения решений не нашлось, далее будет возврщен None
+    row, col = empty_pos
+    if find_possible_values(grid, empty_pos):
+        for i in find_possible_values(grid, empty_pos):
+            grid[row][col] = i
+            solution = solve(grid)
+            if solution:
                 return solution
-    grid[row][col] = '.'  # последняя ячейка так и не была найдена, стираем ее значение
-    return None  # значения для ячейки нет, поэтому надо вернуться к прошлой ситуации
+    grid[row][col] = '.'
+    return None
 
 def check_solution(solution):
     """ Если решение solution верно, то вернуть True, в противном случае False """
@@ -182,7 +171,7 @@ def generate_sudoku(N):
     >>> check_solution(solution)
     True
     """
-    #c    grid = solve([['.' for col in range(9)]for row in range(9)])
+    grid = solve([['.' for col in range(9)]for row in range(9)])
     if N > 81:
         numb = 0
     elif N < 0:
