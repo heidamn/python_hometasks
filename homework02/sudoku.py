@@ -121,12 +121,11 @@ def solve(grid):
     if not empty_pos:
         return grid
     row, col = empty_pos
-    if find_possible_values(grid, empty_pos):
-        for i in find_possible_values(grid, empty_pos):
-            grid[row][col] = i
-            solution = solve(grid)
-            if solution:
-                return solution
+    for i in find_possible_values(grid, empty_pos):
+        grid[row][col] = i
+        solution = solve(grid)
+        if solution:
+            return solution
     grid[row][col] = '.'
     return None
 
