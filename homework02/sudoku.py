@@ -1,12 +1,15 @@
+"""
+sudoku for ITMO 2018
+"""
 import random
 import time
-from typing import List, Tuple, Optional,Set
+from typing import List, Tuple, Optional, Set
 
 def read_sudoku(filename: str) -> Optional[List]:
     """ Прочитать Судоку из указанного файла """
     digits = [c for c in open(filename).read() if c in '123456789.']
-    grid = group(digits, 9)
-    return grid
+    gridread = group(digits, 9)
+    return gridread
 
 
 def display(values: List):
@@ -20,7 +23,7 @@ def display(values: List):
     print()
 
 
-def group(values: List, n: int) -> List:
+def group(values: List, leng: int) -> List:
     """
     Сгруппировать значения values в список, состоящий из списков по n элементов
 
@@ -29,7 +32,7 @@ def group(values: List, n: int) -> List:
     >>> group([1,2,3,4,5,6,7,8,9], 3)
     [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
     """
-    return [[values[el + col] for el in range(n)] for col in range(0, n**2, n)]
+    return [[values[el + col] for el in range(leng)] for col in range(0, leng**2, leng)]
 
 
 def get_row(values: List, pos: Tuple) -> List:
@@ -55,7 +58,7 @@ def get_col(values: List, pos: Tuple) -> List:
     >>> get_col([['1', '2', '3'], ['4', '5', '6'], ['.', '8', '9']], (0, 2))
     ['3', '6', '9']
     """
-    row, col = pos
+    col = pos[1]
     return [lin[col] for lin in values]
 
 
@@ -77,7 +80,7 @@ def get_block(values: List, pos: Tuple) -> List:
     return block
 
 
-def find_empty_positions(grid: List) -> Optional[Tuple]:
+def find_empty_positions(gridfep: List) -> Optional[Tuple]:
     """ Найти первую свободную позицию в пазле
 
     >>> find_empty_positions([['1', '2', '.'], ['4', '5', '6'], ['7', '8', '9']])
@@ -87,15 +90,15 @@ def find_empty_positions(grid: List) -> Optional[Tuple]:
     >>> find_empty_positions([['1', '2', '3'], ['4', '5', '6'], ['.', '8', '9']])
     (2, 0)
     """
-    for row in range(len(grid)):
-        for col in range(len(grid[row])):
-            if grid[row][col] == '.':
-                empty_pos = (row, col)
+    for rown, row in enumerate(gridfep):
+        for coln, col in enumerate(row):
+            if col == '.':
+                empty_pos = (rown, coln)
                 return empty_pos
     return None
 
 
-def find_possible_values(grid: List, pos: Tuple) -> Set:
+def find_possible_values(gridfpv: List, pos: Tuple) -> Set:
     """ Вернуть множество возможных значения для указанной позиции
 
     >>> grid = read_sudoku('puzzle1.txt')
@@ -106,62 +109,53 @@ def find_possible_values(grid: List, pos: Tuple) -> Set:
     >>> values == {'2', '5', '9'}
     True
     """
-    block = set(get_block(grid, pos))
-    col = set(get_col(grid, pos))
-    row = set(get_row(grid, pos))
+    block = set(get_block(gridfpv, pos))
+    col = set(get_col(gridfpv, pos))
+    row = set(get_row(gridfpv, pos))
     values = set('123456789')
     return values - block - col - row
 
 
-def solve(grid: List) -> Optional[List]:
+def solve(grids: List) -> Optional[List]:
     """
     >>> grid = read_sudoku('puzzle1.txt')
     >>> solve(grid)
     [['5', '3', '4', '6', '7', '8', '9', '1', '2'], ['6', '7', '2', '1', '9', '5', '3', '4', '8'], ['1', '9', '8', '3', '4', '2', '5', '6', '7'], ['8', '5', '9', '7', '6', '1', '4', '2', '3'], ['4', '2', '6', '8', '5', '3', '7', '9', '1'], ['7', '1', '3', '9', '2', '4', '8', '5', '6'], ['9', '6', '1', '5', '3', '7', '2', '8', '4'], ['2', '8', '7', '4', '1', '9', '6', '3', '5'], ['3', '4', '5', '2', '8', '6', '1', '7', '9']]
     """
-    """
-    Решение пазла, заданного в grid
-        Как решать Судоку?
-        1. Найти свободную позицию
-        2. Найти все возможные значения, которые могут находиться на этой позиции
-        3. Для каждого возможного значения:
-            3.1. Поместить это значение на эту позицию
-            3.2. Продолжить решать оставшуюся часть пазла
-    """
-    empty_pos = find_empty_positions(grid)
+    empty_pos = find_empty_positions(grids)
     if not empty_pos:
-        return grid
+        return grids
     row, col = empty_pos
-    for i in find_possible_values(grid, empty_pos):
-        grid[row][col] = i
-        solution = solve(grid)
-        if solution:
-            return solution
-    grid[row][col] = '.'
+    for i in find_possible_values(grids, empty_pos):
+        grids[row][col] = i
+        solutions = solve(grids)
+        if solutions:
+            return solutions
+    grids[row][col] = '.'
     return None
 
 
-def check_solution(solution: List) -> bool:
+def check_solution(solutioncs: List) -> bool:
     """ Если решение solution верно, то вернуть True, в противном случае False """
     for i in range(9):
-        row = get_row(solution, (i, 0))
+        row = get_row(solutioncs, (i, 0))
         for num in row:
             if row.count(num) > 1:
                 return False
     for i in range(9):
-        col = get_col(solution, (0, i))
+        col = get_col(solutioncs, (0, i))
         for num in col:
             if col.count(num) > 1:
                 return False
     for i in range(9):
-        block = get_block(solution, (i // 3 * 3, i % 3 * 3))
+        block = get_block(solutioncs, (i // 3 * 3, i % 3 * 3))
         for num in block:
             if block.count(num) > 1:
                 return False
     return True
 
 
-def generate_sudoku(N: int) -> List:
+def generate_sudoku(amount: int) -> List:
     """ Генерация судоку заполненного на N элементов
 
     >>> grid = generate_sudoku(40)
@@ -183,20 +177,20 @@ def generate_sudoku(N: int) -> List:
     >>> check_solution(solution)
     True
     """
-    grid = solve([['.' for col in range(9)]for row in range(9)])
-    if N > 81:
+    gridgs = solve([['.' for col in range(9)]for row in range(9)])
+    if amount > 81:
         numb = 0
-    elif N < 0:
+    elif amount < 0:
         numb = 81
     else:
-        numb = 81 - N
+        numb = 81 - amount
     while numb != 0:
         row = random.randint(0, 8)
         col = random.randint(0, 8)
-        if grid[row][col] != '.':
-            grid[row][col] = '.'
+        if gridgs[row][col] != '.':
+            gridgs[row][col] = '.'
             numb -= 1
-    return grid
+    return gridgs
 
 
 if __name__ == '__main__':
