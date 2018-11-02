@@ -1,15 +1,15 @@
 import random
 import time
+from typing import List, Tuple, Optional,Set
 
-
-def read_sudoku(filename: str):
+def read_sudoku(filename: str) -> Optional[List]:
     """ Прочитать Судоку из указанного файла """
     digits = [c for c in open(filename).read() if c in '123456789.']
     grid = group(digits, 9)
     return grid
 
 
-def display(values: list):
+def display(values: List):
     """Вывод Судоку """
     width = 2
     line = '+'.join(['-' * (width * 3)] * 3)
@@ -20,7 +20,7 @@ def display(values: list):
     print()
 
 
-def group(values: list, n: int):
+def group(values: List, n: int) -> List:
     """
     Сгруппировать значения values в список, состоящий из списков по n элементов
 
@@ -32,7 +32,7 @@ def group(values: list, n: int):
     return [[values[el + col] for el in range(n)] for col in range(0, n**2, n)]
 
 
-def get_row(values: list, pos: tuple):
+def get_row(values: List, pos: Tuple) -> List:
     """ Возвращает все значения для номера строки, указанной в pos
 
     >>> get_row([['1', '2', '.'], ['4', '5', '6'], ['7', '8', '9']], (0, 0))
@@ -45,7 +45,7 @@ def get_row(values: list, pos: tuple):
     return values[pos[0]]
 
 
-def get_col(values: list, pos: tuple) -> list:
+def get_col(values: List, pos: Tuple) -> List:
     """ Возвращает все значения для номера столбца, указанного в pos
 
     >>> get_col([['1', '2', '.'], ['4', '5', '6'], ['7', '8', '9']], (0, 0))
@@ -59,7 +59,7 @@ def get_col(values: list, pos: tuple) -> list:
     return [lin[col] for lin in values]
 
 
-def get_block(values: list, pos: tuple) -> list:
+def get_block(values: List, pos: Tuple) -> List:
     """ Возвращает все значения из квадрата, в который попадает позиция pos
 
     >>> grid = read_sudoku('puzzle1.txt')
@@ -77,7 +77,7 @@ def get_block(values: list, pos: tuple) -> list:
     return block
 
 
-def find_empty_positions(grid: list) -> tuple:
+def find_empty_positions(grid: List) -> Optional[Tuple]:
     """ Найти первую свободную позицию в пазле
 
     >>> find_empty_positions([['1', '2', '.'], ['4', '5', '6'], ['7', '8', '9']])
@@ -95,7 +95,7 @@ def find_empty_positions(grid: list) -> tuple:
     return None
 
 
-def find_possible_values(grid: list, pos: tuple) -> set:
+def find_possible_values(grid: List, pos: Tuple) -> Set:
     """ Вернуть множество возможных значения для указанной позиции
 
     >>> grid = read_sudoku('puzzle1.txt')
@@ -113,7 +113,7 @@ def find_possible_values(grid: list, pos: tuple) -> set:
     return values - block - col - row
 
 
-def solve(grid: list) -> list:
+def solve(grid: List) -> Optional[List]:
     """
     >>> grid = read_sudoku('puzzle1.txt')
     >>> solve(grid)
@@ -141,7 +141,7 @@ def solve(grid: list) -> list:
     return None
 
 
-def check_solution(solution: list) -> bool:
+def check_solution(solution: List) -> bool:
     """ Если решение solution верно, то вернуть True, в противном случае False """
     for i in range(9):
         row = get_row(solution, (i, 0))
@@ -161,7 +161,7 @@ def check_solution(solution: list) -> bool:
     return True
 
 
-def generate_sudoku(N: int) -> list:
+def generate_sudoku(N: int) -> List:
     """ Генерация судоку заполненного на N элементов
 
     >>> grid = generate_sudoku(40)
