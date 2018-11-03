@@ -31,6 +31,7 @@ class GameOfLife:
             pygame.draw.line(self.screen, pygame.Color('black'),
                     (0, y), (self.width, y))
 
+
     def run(self):
         """ Запустить игру """
         pygame.init()
