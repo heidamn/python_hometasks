@@ -1,5 +1,5 @@
 """ Лабораторная работа №3
-    Игра Жизнь
+    Игра Жизнь с использованием классов
     Шоломов Даниил, k3140
     ИТМО, 2018
     """
@@ -13,7 +13,7 @@ from pygame.locals import *
 class GameOfLife:
     """класс визуализации и процесса игры"""
 
-    def __init__(self, width=640, height=480, cell_size=10, speed=10):
+    def __init__(self: object, width: int = 640, height: int = 480, cell_size: int = 10, speed: int = 10) -> None:
         self.width = width
         self.height = height
         self.cell_size = cell_size
@@ -27,7 +27,7 @@ class GameOfLife:
         # Скорость протекания игры
         self.speed = speed
 
-    def draw_grid(self):
+    def draw_grid(self: object) -> None:
         """ Отрисовать сетку """
         for x in range(0, self.width, self.cell_size):
             pygame.draw.line(self.screen, pygame.Color('black'),
@@ -36,7 +36,7 @@ class GameOfLife:
             pygame.draw.line(self.screen, pygame.Color('black'),
                              (0, y), (self.width, y))
 
-    def draw_cell_list(self, celllist):
+    def draw_cell_list(self: object, celllist: object) -> None:
         """ Отображение списка клеток
         :param rects: Список клеток для отрисовки, представленный в виде матрицы
         """
@@ -44,12 +44,12 @@ class GameOfLife:
             for coln, col in enumerate(row):
                 if col.is_alive():
                     pygame.draw.rect(self.screen, pygame.Color('green'),
-                                     (coln * self.cell_size, rown * self.cell_size, self.cell_size, self.cell_size))
+                                     (rown * self.cell_size, coln * self.cell_size, self.cell_size, self.cell_size))
                 else:
                     pygame.draw.rect(self.screen, pygame.Color('white'),
-                                     (coln * self.cell_size, rown * self.cell_size, self.cell_size, self.cell_size))
+                                     (rown * self.cell_size, coln * self.cell_size, self.cell_size, self.cell_size))
 
-    def run(self):
+    def run(self: object) -> None:
         """ Запустить игру """
         pygame.init()
         clock = pygame.time.Clock()
@@ -74,12 +74,12 @@ class GameOfLife:
 class Cell:
     """Класс, описывающий отдельную клетку поля """
 
-    def __init__(self, row, col, state=False):
+    def __init__(self: object, row: int, col: int, state: bool = False) -> None:
         self.row = row
         self.col = col
         self.state = state
 
-    def is_alive(self):
+    def is_alive(self) -> bool:
         """ Проверка статуса клетки"""
 
         return self.state
@@ -88,7 +88,7 @@ class Cell:
 class CellList:
     """ Класс игрового поля, состоящего из клеток"""
 
-    def __init__(self, nrows, ncols, randomize=False):
+    def __init__(self: object, nrows: int, ncols: int, randomize: bool = False) -> None:
         self.nrows = nrows
         self.ncols = ncols
         self.randomize = randomize
@@ -98,12 +98,12 @@ class CellList:
             clist = [[Cell(rown, coln, state=False) for coln in range(ncols)] for rown in range(nrows)]
         self.clist = clist
 
-    def get_neighbours(self, cell):
+    def get_neighbours(self: object, cell: Cell) -> list:
         """ Получение состояния соседних клеток """
 
         return [self.clist[rown + cell.row][coln + cell.col] for rown in range(-1, 2) for coln in range(-1, 2) if (coln or rown) and 0 <= cell.row + rown < self.nrows and 0 <= cell.col + coln < self.ncols]
 
-    def update(self):
+    def update(self: object) -> object:
         """ Обновление игрового поля """
         new_clist = deepcopy(self.clist)
         for cell in self:
@@ -120,7 +120,7 @@ class CellList:
         return self
 
     @classmethod
-    def from_file(cls, filename):
+    def from_file(cls: object, filename: str) -> object:
         """ Получение поля из файла """
         cells = open(filename).read()
         nrows = cells.count('\n')
@@ -134,11 +134,11 @@ class CellList:
                 count += 1
         return grid
 
-    def __iter__(self):
+    def __iter__(self: object) -> None:
         self.row_count, self.col_count = 0, 0
         return self
 
-    def __next__(self):
+    def __next__(self: object):
         if self.row_count == self.nrows:
             raise StopIteration
         cell = self.clist[self.row_count][self.col_count]
@@ -148,7 +148,7 @@ class CellList:
             self.row_count += 1
         return cell
 
-    def __str__(self):
+    def __str__(self: object) -> None:
         strclist = ''
         for cell in self:
             if cell.is_alive():
@@ -161,5 +161,5 @@ class CellList:
 
 
 if __name__ == '__main__':
-    game = GameOfLife(800, 40, 20)
+    game = GameOfLife(800, 600, 20)
     game.run()
