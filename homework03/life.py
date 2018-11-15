@@ -108,7 +108,7 @@ class GameOfLife:
         new_clist = [[0 for col in range(self.cell_width)] for row in range(self.cell_height)]
         for rown, row in enumerate(cell_list):
             for coln, col in enumerate(row):
-                neighbours = game.get_neighbours((rown, coln))
+                neighbours = self.get_neighbours((rown, coln))
                 neighbours_num = neighbours.count(1)
                 if neighbours_num == 3 or (neighbours_num == 2 and col == 1):
                     new_clist[rown][coln] = 1
