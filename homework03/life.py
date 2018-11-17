@@ -48,8 +48,9 @@ class GameOfLife:
             for event in pygame.event.get():
                 if event.type == QUIT:
                     running = False
-            self.draw_grid()
+            
             self.draw_cell_list(clist)
+            self.draw_grid()
             clist = self.update_cell_list(clist)
             # Отрисовка списка клеток
             # Выполнение одного шага игры (обновление состояния ячеек)

@@ -63,8 +63,8 @@ class GameOfLife:
             for event in pygame.event.get():
                 if event.type == QUIT:
                     running = False
-            self.draw_grid()
             self.draw_cell_list(celllist)
+            self.draw_grid()
             celllist.update()
             pygame.display.flip()
             clock.tick(self.speed)
@@ -122,11 +122,10 @@ class CellList:
     @classmethod
     def from_file(cls, filename: str) -> object:
         """ Получение поля из файла """
-        cells_file = open(filename, 'r')
-        cells_str = cells_file.read()
-        nrows = cells_str.count('\n')
-        cells = [bool(int(c)) for c in cells_str if c in '01']
-        cells_file.close()
+        with open(filename, 'r') as cells_file:
+            cells_str = cells_file.read()
+            nrows = cells_str.count('\n')
+            cells = [bool(int(c)) for c in cells_str if c in '01']
         ncols = len(cells) // nrows
         grid = CellList(nrows, ncols)
         count = 0
