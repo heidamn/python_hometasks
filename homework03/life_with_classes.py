@@ -122,9 +122,11 @@ class CellList:
     @classmethod
     def from_file(cls, filename: str) -> object:
         """ Получение поля из файла """
-        cells_str = open(filename).read()
+        cells_file = open(filename, 'r')
+        cells_str = cells_file.read()
         nrows = cells_str.count('\n')
         cells = [bool(int(c)) for c in cells_str if c in '01']
+        cells_file.close()
         ncols = len(cells) // nrows
         grid = CellList(nrows, ncols)
         count = 0
