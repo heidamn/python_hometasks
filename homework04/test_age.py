@@ -45,3 +45,8 @@ class TestAgePredict(unittest.TestCase):
             predicted_age = age_predict(user_id=1)
             self.assertEqual(predicted_age, None)
 
+m = TestAgePredict()
+m.test_friends_with_bdate_field()
+m.test_friends_with_incomplete_bdate_field()
+m.test_friends_without_bdate_field()
+m.test_empty_response()

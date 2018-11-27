@@ -1,5 +1,5 @@
 from collections import Counter
-import datetime
+from datetime import datetime
 import plotly
 import plotly.plotly as py
 import plotly.graph_objs as go
@@ -10,8 +10,8 @@ from api_models import Message
 import config
 
 
-Dates = List[datetime.date]
-Frequencies = List[int]
+Dates = []
+Frequencies = []
 
 
 plotly.tools.set_credentials_file(
@@ -24,23 +24,22 @@ def fromtimestamp(ts: int) -> datetime.date:
     return datetime.datetime.fromtimestamp(ts).date()
 
 
-def count_dates_from_messages(messages: List[Message]) -> Tuple[Dates, Frequencies]:
+def count_dates_from_messages(messages: List[Message]) :
     """ Получить список дат и их частот
 
     :param messages: список сообщений
     """
-    dates = []
-    messn = []
-    for message in messages['response']['items']:
-        date = datetime.datetime.fromtimestamp(message['date']).strftime("%Y-%m-%d")
+    for message in messages:
+        date = datetime.fromtimestamp(message['date']).strftime("%Y-%m-%d")
         try:
-            messn[dates.index(date)] += 1
+            Frequencies[Dates.index(date)] += 1
         except:
-            dates.append(date)
-            messn.append(1)
-    dates.reverse()
-    messn.reverse()
-    message_count = (dates, messn)
+            Dates.append(date)
+            Frequencies.append(1)
+
+    Dates.reverse()
+    Frequencies.reverse()
+    message_count = (Dates, Frequencies)
     return message_count
 
 
@@ -50,4 +49,12 @@ def plotly_messages_freq(dates: Dates, freq: Frequencies) -> None:
     :param date: список дат
     :param freq: число сообщений в соответствующую дату
     """
-    # PUT YOUR CODE HERE
+    x = dates
+    y = freq
+    data = [go.Scatter(x=x,y=y)]
+    py.iplot(data)
+
+
+m = count_dates_from_messages(messages_get_history(173128912, count=300))
+d, f = m
+plotly_messages_freq(d, f)

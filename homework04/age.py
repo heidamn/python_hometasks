@@ -17,7 +17,7 @@ def age_predict(user_id: int) -> Optional[float]:
     assert user_id > 0, "user_id must be positive integer"
     friends = get_friends(user_id, "bdate")
     age_list = []
-    for friend in friends['response']['items']:
+    for friend in friends:
         try:
             bdate = friend['bdate']
             if len(bdate) >= 8:
@@ -30,7 +30,9 @@ def age_predict(user_id: int) -> Optional[float]:
         today = date.today()
         age_list[pos] = today.year - bdate.year - ((today.month, today.day) < (bdate.month, bdate.day))
     age_list.sort()
-    if len(age_list) % 2 == 0:
-        return (age_list[len(age_list)//2 -1] + age_list[len(age_list)//2 + 1]) /2
+    if len(age_list) % 2 == 0 and len(age_list) != 0:
+        return (age_list[len(age_list)//2 -1] + age_list[len(age_list)//2]) / 2
+    elif len(age_list) == 0:
+        return None
     else:
         return age_list[len(age_list)//2]

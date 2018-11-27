@@ -44,3 +44,9 @@ class TestGetRequest(unittest.TestCase):
             with self.assertRaises(requests.exceptions.ConnectionError):
                 get('http://example.com', max_retries=1)
 
+m = TestGetRequest()
+#m.test_backoff_factor()
+m.test_max_retries()
+m.test_raises_on_http_error()
+m.test_raises_on_server_internal_error()
+m.test_raises_on_timeout_error()
