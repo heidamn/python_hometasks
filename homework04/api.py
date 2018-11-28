@@ -25,6 +25,7 @@ def get(url, params={}, timeout=5, max_retries=5, backoff_factor=0.3):
         delay = backoff_factor * (2 ** tryn)
 
 
+
 def get_friends(user_id, fields):
     """ Вернуть данных о друзьях пользователя
 
@@ -47,8 +48,12 @@ def get_friends(user_id, fields):
     }
 
     query = "{domain}/friends.get?access_token={access_token}&user_id={user_id}&fields={fields}&v=5.53".format(**query_params)
-    response = get(query)
-    return response.json()['response']['items']
+    try:
+        response = get(query)
+        return response.json()['response']['items']
+    except:
+        return None
+
 
 
 def messages_get_history(user_id, offset=0, count=200):
