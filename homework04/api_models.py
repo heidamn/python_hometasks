@@ -8,7 +8,6 @@ class BaseUser(BaseModel):
     first_name: str
     last_name: str
     online: int
-    deactivated: Optional[str]
 
 
 class User(BaseUser):
@@ -18,4 +17,6 @@ class User(BaseUser):
 
 class Message(BaseModel):
     """ Модель сообщения """
-    # PUT YOUR CODE HERE
+    text: str
+    date: int
+

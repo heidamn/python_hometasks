@@ -19,7 +19,7 @@ def age_predict(user_id: int) -> Optional[float]:
     age_list = []
     for friend in friends:
         try:
-            bdate = friend['bdate']
+            bdate = friend.bdate
             if len(bdate) >= 8:
                 age_list.append(bdate)
         except:

@@ -2,6 +2,7 @@ import requests
 import time
 import config
 import random
+from api_models import User, Message
 
 def get(url, params={}, timeout=5, max_retries=5, backoff_factor=0.3):
     """ Выполнить GET-запрос
@@ -48,11 +49,16 @@ def get_friends(user_id, fields):
     }
 
     query = "{domain}/friends.get?access_token={access_token}&user_id={user_id}&fields={fields}&v=5.53".format(**query_params)
-    try:
-        response = get(query)
-        return response.json()['response']['items']
-    except:
-        return None
+    response = get(query).json()['response']['items']
+    for num,friend in enumerate(response):
+        user = User(id= friend['id'], first_name=friend['first_name'], last_name=friend['last_name'], online=friend['online'])
+        try:
+            user.bdate = friend['bdate']
+        except:
+            pass
+        response[num] = user
+    return response
+
 
 
 
@@ -97,4 +103,7 @@ def messages_get_history(user_id, offset=0, count=200):
     query = "{domain}/messages.getHistory?access_token={access_token}&user_id={user_id}&offset={offset}&count={count}&v=5.53".format(**query_params)
     response = get(query)
     messages.extend(response.json()['response']['items'])
+    for num,message in enumerate(messages):
+        message = Message(text = message['body'], date = message['date'])
+        messages[num] = message
     return messages
