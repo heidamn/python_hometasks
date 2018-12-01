@@ -49,8 +49,12 @@ def get_friends(user_id, fields):
     }
 
     query = "{domain}/friends.get?access_token={access_token}&user_id={user_id}&fields={fields}&v=5.53".format(**query_params)
-    response = get(query).json()['response']['items']
-    for num,friend in enumerate(response):
+    response = get(query).json()
+    try:
+        response = response['response']['items']
+    except:
+        return []
+    for num, friend in enumerate(response):
         user = User(id= friend['id'], first_name=friend['first_name'], last_name=friend['last_name'], online=friend['online'])
         try:
             user.bdate = friend['bdate']
