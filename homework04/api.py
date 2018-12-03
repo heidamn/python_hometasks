@@ -13,18 +13,22 @@ def get(url, params={}, timeout=5, max_retries=5, backoff_factor=0.3):
     :param max_retries: максимальное число повторных запросов
     :param backoff_factor: коэффициент экспоненциального нарастания задержки
     """
-    delay = 0
+    delay = 2
     for tryn in range(max_retries):
         try:
             response = requests.get(url, params=params, timeout=timeout)
         except requests.exceptions.RequestException:
-            if tryn == max_retries:
+            if tryn == max_retries-1:
                  raise
-            time.sleep(delay)
+        except Exception as e:
+            print(e)
         else:
             return response
+        time.sleep(delay)
         delay = backoff_factor * (2 ** tryn)
 
+
+    return None
 
 
 def get_friends(user_id, fields):
