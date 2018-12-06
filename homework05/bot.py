@@ -19,46 +19,38 @@ def get_page(group, week=''):
     return web_page
 
 
-def parse_schedule_for_a_monday(web_page):
-    soup = BeautifulSoup(web_page, "html5lib")
-
-    # Получаем таблицу с расписанием на понедельник
-    schedule_table = soup.find("table", attrs={"id": "1day"})
-
-    # Время проведения занятий
-    times_list = schedule_table.find_all("td", attrs={"class": "time"})
-    times_list = [time.span.text for time in times_list]
-
-    # Место проведения занятий
-    locations_list = schedule_table.find_all("td", attrs={"class": "room"})
-    locations_list = [room.span.text for room in locations_list]
-
-    # Название дисциплин и имена преподавателей
-    lessons_list = schedule_table.find_all("td", attrs={"class": "lesson"})
-    lessons_list = [lesson.text.split('\n\n') for lesson in lessons_list]
-    lessons_list = [', '.join([info for info in lesson_info if info]) for lesson_info in lessons_list]
-
-    return times_list, locations_list, lessons_list
-
-
-@bot.message_handler(commands=['monday'])
-def get_monday(message):
-    """ Получить расписание на понедельник """
-    _, group = message.text.split()
-    web_page = get_page(group)
-    times_lst, locations_lst, lessons_lst = \
-        parse_schedule_for_a_monday(web_page)
-    resp = ''
-    for time, location, lession in zip(times_lst, locations_lst, lessons_lst):
-        resp += '<b>{}</b>, {}, {}\n'.format(time, location, lession)
-    bot.send_message(message.chat.id, resp, parse_mode='HTML')
-
-
 @bot.message_handler(commands=['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'])
 def get_schedule(message):
     """ Получить расписание на указанный день """
-    # PUT YOUR CODE HERE
-    pass
+    print(message.text)
+    try:
+        day, group, week = message.text.split()
+    except:
+    	week = '0'
+    	day, group = message.text.split()
+    days = {'/monday': '1day', '/tuesday': '2day', '/wednesday': '3day', '/thursday': '4day', '/friday': '5day', '/saturday': '6day', '/sunday': '7day'}
+    web_page = get_page(group)
+    day = days[day]
+    soup = BeautifulSoup(web_page, "html5lib")
+    # Получаем таблицу с расписанием на день
+    schedule_table = soup.find("table", attrs={"id": day})
+    # Время проведения занятий
+    if not schedule_table:
+    	bot.send_message(message.chat.id, 'день свободен!')
+    else:
+        times_list = schedule_table.find_all("td", attrs={"class": "time"})
+        times_list = [time.span.text for time in times_list]
+        # Место проведения занятий
+        locations_list = schedule_table.find_all("td", attrs={"class": "room"})
+        locations_list = [room.span.text for room in locations_list]
+        # Название дисциплин и имена преподавателей
+        lessons_list = schedule_table.find_all("td", attrs={"class": "lesson"})
+        lessons_list = [lesson.text.split('\n\n') for lesson in lessons_list]
+        lessons_list = [', '.join([info for info in lesson_info if info]) for lesson_info in lessons_list]
+        resp = ''
+        for time, location, lession in zip(times_list, locations_list, lessons_list):
+            resp += '<b>{}</b>, {}, {}\n'.format(time, location, lession)
+        bot.send_message(message.chat.id, resp, parse_mode='HTML')
 
 
 @bot.message_handler(commands=['near'])
