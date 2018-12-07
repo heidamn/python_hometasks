@@ -2,6 +2,7 @@ import requests
 import config
 import telebot
 from time import sleep
+import datetime
 from bs4 import BeautifulSoup
 
 
@@ -23,12 +24,23 @@ def get_page(group, week=''):
 @bot.message_handler(commands=['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'])
 def get_schedule(message):
     """ Получить расписание на указанный день """
-    try:
-        day, group, week = message.text.split()
-        week = int(week) % 2
-    except:
+    parts = message.text.split()
+    if len(parts) == 3:
+        day, group, week = parts
+        week = int(week)
+    elif parts == 2:
         week = 0
-        day, group = message.text.split()
+        day, group = parts
+    else:
+        bot.send_message(message.chat.id, "Аргументы:\ngroup_number - номер группы\nweek - номер недели(0 - все недели, 1 - нечетн, 2 - четн)")
+        return None
+    if week not in [0, 1, 2]:
+        week = week % 2
+        if week == 0:
+            week = 2
+    print(week)
+    if day.find('@heidamn_itmo_bot') != -1:
+        day = day[:-17]
     days = {'/monday': '1day', '/tuesday': '2day', '/wednesday': '3day', '/thursday': '4day', '/friday': '5day', '/saturday': '6day', '/sunday': '7day'}
     web_page = get_page(group)
     day = days[day]
@@ -56,7 +68,7 @@ def get_schedule(message):
             if week == 0:
                 resp += '<b>{}</b>, {}, {} {}\n'.format(time, location, room, lession)
             elif week == 1:
-                if lession.find('нечетная неделя') != -1 or lession.find('нечетная неделя') == -1:
+                if lession.find('нечетная неделя') != -1 or lession.find('четная неделя') == -1:
                     resp += '<b>{}</b>, {},{} {}\n'.format(time, location, room, lession)
             else:
                 if lession.find('нечетная неделя') == -1:
@@ -67,7 +79,8 @@ def get_schedule(message):
 @bot.message_handler(commands=['near'])
 def get_near_lesson(message):
     """ Получить ближайшее занятие """
-    # PUT YOUR CODE HERE
+    print(message)
+    message.date
     pass
 
 
@@ -81,12 +94,21 @@ def get_tommorow(message):
 @bot.message_handler(commands=['all'])
 def get_all_schedule(message):
     """ Получить расписание на всю неделю для указанной группы """
-    try:
-        _, group, week = message.text.split()
-        week = int(week) % 2
-    except:
-        _, group = message.text.split()
+    parts = message.text.split()
+    if len(parts) == 3:
+        day, group, week = parts
+        week = int(week)
+    elif parts == 2:
         week = 0
+        day, group = parts
+    else:
+        bot.send_message(message.chat.id, "Аргументы:\ngroup_number - номер группы\nweek - номер недели(0 - все недели, 1 - нечетн, 2 - четн)")
+        return None
+    if week not in [0, 1, 2]:
+        week = week % 2
+        if week == 0:
+            week = 2
+    print(week)
     days = ['1day', '2day', '3day', '4day', '5day', '6day', '7day']
     days2 = ['Понедельник','Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье']
     web_page = get_page(group)
@@ -116,7 +138,7 @@ def get_all_schedule(message):
                 if week == 0:
                     resp += '<b>{}</b>, {}, {} {}\n'.format(time, location, room, lession)
                 elif week == 1:
-                    if lession.find('нечетная неделя') != -1 or lession.find('нечетная неделя') == -1:
+                    if lession.find('нечетная неделя') != -1 or lession.find('четная неделя') == -1:
                         resp += '<b>{}</b>, {},{} {}\n'.format(time, location, room, lession)
                 else:
                     if lession.find('нечетная неделя') == -1:
