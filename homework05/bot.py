@@ -41,13 +41,14 @@ def get_schedule(message):
     if day.find('@heidamn_itmo_bot') != -1:
         day = day[:-17]
     days = {'/monday': '1day', '/tuesday': '2day', '/wednesday': '3day', '/thursday': '4day', '/friday': '5day', '/saturday': '6day', '/sunday': '7day'}
+    days2 = {'/monday': 'Понедельник', '/tuesday': 'Вторник', '/wednesday': 'Среда', '/thursday': 'Четверг', '/friday': 'Пятница', '/saturday': 'Суббота', '/sunday': 'Воскресенье'}
     web_page = get_page(group)
-    day = days[day]
+    day, day2 = days[day], days2[day]
     soup = BeautifulSoup(web_page, "html5lib")
     # Получаем таблицу с расписанием на день
     schedule_table = soup.find("table", attrs={"id": day})
     if not schedule_table:
-        bot.send_message(message.chat.id, 'День свободен!')
+        bot.send_message(message.chat.id, '<b>{}</b>\n\nДень свободен!'.format(day2), parse_mode='HTML')
     else:
         # Время проведения занятий
         times_list = schedule_table.find_all("td", attrs={"class": "time"})
@@ -62,10 +63,10 @@ def get_schedule(message):
         # Аудитория
         rooms_list = schedule_table.find_all("td", attrs={"class": "room"})
         rooms_list = [room.dd.text for room in rooms_list]
-        resp = ''
+        resp = '<b>{}\n\n</b>'.format(day2)
         for time, location, room, lession in zip(times_list, locations_list, rooms_list, lessons_list):
             if week == 0:
-                resp += '<b>{}</b>, {}, {} {}\n'.format(time, location, room, lession)
+                resp += '<b>{}</b>, {},{} {}\n'.format(time, location, room, lession)
             elif week == 1:
                 if lession.find('нечетная неделя') != -1 or lession.find('четная неделя') == -1:
                     resp += '<b>{}</b>, {},{} {}\n'.format(time, location, room, lession)
@@ -93,7 +94,7 @@ def get_near_lesson(message):
         first_sept = datetime(today.year, 9, 1)
     else:
         first_sept = datetime(today.year-1, 9, 1)
-    while True:
+    for _n in range(10):
         now = Time(today.hour, today. minute)
         week = (today - first_sept).days // 7 % 2
         if week == 0:
@@ -124,18 +125,18 @@ def get_near_lesson(message):
             for time, location, room, lession, time_Time in zip(times_list, locations_list, rooms_list, lessons_list, times_list_Time):
                 if week == 1:
                     if lession.find('нечетная неделя') != -1 or lession.find('четная неделя') == -1 and time_Time >= now:
-                        resp = '<b>{}</b>, {},{} {}\n'.format(time, location, room, lession)
-                        bot.send_message(message.chat.id, days2[today.weekday()])
+                        resp = '<b>{}\n\n{}</b>, {},{} {}\n'.format(days2[today.weekday()], time, location, room, lession)
                         bot.send_message(message.chat.id, resp, parse_mode='HTML')
                         return None
                 elif time_Time >= now:
                     if lession.find('нечетная неделя') == -1:
-                        resp = '<b>{}</b>, {},{} {}\n'.format(time, location, room, lession)
-                        bot.send_message(message.chat.id, days2[today.weekday()])
+                        resp = '<b>{}\n\n{}</b>, {},{} {}\n'.format(days2[today.weekday()], time, location, room, lession)
                         bot.send_message(message.chat.id, resp, parse_mode='HTML')
                         return None
         today = today.replace(hour=0, minute=0, second=0)
         today = today + timedelta(1)
+    else:
+        bot.send_message(message.chat.id, 'Ошибка расписания на сайте ИТМО!!!')
 
 
 @bot.message_handler(commands=['tomorrow'])
@@ -178,17 +179,15 @@ def get_all_schedule(message):
         week = week % 2
         if week == 0:
             week = 2
-    print(week)
     days = ['1day', '2day', '3day', '4day', '5day', '6day', '7day']
     days2 = ['Понедельник','Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье']
     web_page = get_page(group)
     soup = BeautifulSoup(web_page, "html5lib")
-    for num,day in enumerate(days):
+    for num, day in enumerate(days):
         # Получаем таблицу с расписанием на день
-        bot.send_message(message.chat.id, days2[num])
         schedule_table = soup.find("table", attrs={"id": day})
         if not schedule_table:
-            bot.send_message(message.chat.id, 'День свободен!')
+            bot.send_message(message.chat.id, '<b>{}</b>\n\nДень свободен!'.format(days2[num]), parse_mode='HTML')
         else:
             # Время проведения занятий
             times_list = schedule_table.find_all("td", attrs={"class": "time"})
@@ -203,7 +202,7 @@ def get_all_schedule(message):
             # Аудитория
             rooms_list = schedule_table.find_all("td", attrs={"class": "room"})
             rooms_list = [room.dd.text for room in rooms_list]
-            resp = ''
+            resp = '<b>{}</b>\n\n'.format(days2[num])
             for time, location, room, lession in zip(times_list, locations_list, rooms_list, lessons_list):
                 if week == 0:
                     resp += '<b>{}</b>, {}, {} {}\n'.format(time, location, room, lession)
@@ -212,7 +211,7 @@ def get_all_schedule(message):
                         resp += '<b>{}</b>, {},{} {}\n'.format(time, location, room, lession)
                 else:
                     if lession.find('нечетная неделя') == -1:
-                        resp += '<b>{}</b>, {},{} {}\n'.format(time, location, room, lession)
+                        resp += '<b>{}</b>, {},{} {}\n'.format(days2[num], time, location, room, lession)
             bot.send_message(message.chat.id, resp, parse_mode='HTML')
 
 
