@@ -215,6 +215,62 @@ def get_all_schedule(message):
             bot.send_message(message.chat.id, resp, parse_mode='HTML')
 
 
+@bot.message_handler(commands=['help'])
+def help(message):
+    bot.send_message(message.chat.id, """
+    <b>Commands:
+      monday - sunday:</b>
+           arguments:
+             group_number - номер группы
+             week - номер недели(0 - все недели, 1 - нечетн, 2 - четн)
+           example:
+             /wednesday k3120 1
+      <b>all:</b>
+           arguments:
+             group_number - номер группы
+             week - номер недели(0 - все недели, 1 - нечетн, 2 - четн)
+           example:
+             /all m4245 2
+      <b>near:</b>
+           arguments:
+             group_number - номер группы
+           example:
+             /near k3140
+      <b>tomorrow:</b>
+           arguments:
+             group_number - номер группы
+           example:
+             /tomorrow k3120 1
+    """, parse_mode='HTML')
+
+
+@bot.message_handler(commands=['hi_shakal'])
+def shakal(message):
+    shakal = """⠀
+⠀⠀⠀⠀435⠀⠀⠀⠀⠀4235⠀
+⠀⠀⠀43335⠀⠀⠀⠀43525⠀
+⠀⠀⠀35935⠀⠀⠀⠀35527⠀
+⠀⠀⠀12559649599537⠀⠀
+⠀⠀⠀⠀5088054953362⠀⠀
+⠀⠀⠀33805⠀085⠀80335⠀
+⠀⠀53358365830933357⠀
+⠀⠀⠀333548⠀⠀033335⠀⠀45352
+⠀⠀⠀⠀93530⠀333350⠀⠀445454
+⠀⠀⠀⠀⠀2038⠀53639960695637
+⠀⠀⠀⠀⠀43344033355454537⠀
+⠀⠀⠀⠀4333666633334650⠀
+⠀⠀⠀443555553395399456
+⠀⠀⠀0530339449593643452⠀
+⠀⠀⠀436⠀335⠀⠀⠀⠀⠀9403349
+⠀⠀⠀630⠀⠀54⠀⠀⠀⠀⠀650⠀⠀33
+⠀⠀⠀535⠀⠀239⠀⠀⠀⠀630⠀⠀59
+⠀⠀7333⠀⠀736⠀⠀⠀⠀530⠀⠀33
+⠀⠀933⠀⠀⠀33⠀⠀⠀⠀⠀336⠀⠀33⠀
+⠀⠀333⠀333⠀⠀⠀⠀⠀⠀335⠀⠀⠀533
+55537⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀93333
+⠀⠀⠀⠀⠀⠀⠀HI_HUMAN⠀⠀⠀⠀⠀⠀
+"""
+    bot.send_message(message.chat.id, shakal)
 
 if __name__ == '__main__':
     bot.polling(none_stop=True)
