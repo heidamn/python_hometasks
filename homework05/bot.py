@@ -2,7 +2,7 @@ import requests
 import config
 import telebot
 from time import sleep
-import datetime
+from datetime import datetime, timedelta, time as Time
 from bs4 import BeautifulSoup
 
 
@@ -28,7 +28,7 @@ def get_schedule(message):
     if len(parts) == 3:
         day, group, week = parts
         week = int(week)
-    elif parts == 2:
+    elif len(parts) == 2:
         week = 0
         day, group = parts
     else:
@@ -38,7 +38,6 @@ def get_schedule(message):
         week = week % 2
         if week == 0:
             week = 2
-    print(week)
     if day.find('@heidamn_itmo_bot') != -1:
         day = day[:-17]
     days = {'/monday': '1day', '/tuesday': '2day', '/wednesday': '3day', '/thursday': '4day', '/friday': '5day', '/saturday': '6day', '/sunday': '7day'}
@@ -79,16 +78,87 @@ def get_schedule(message):
 @bot.message_handler(commands=['near'])
 def get_near_lesson(message):
     """ Получить ближайшее занятие """
-    print(message)
-    message.date
-    pass
+    parts = message.text.split()
+    if len(parts) == 2:
+        _, group = parts
+    else:
+        bot.send_message(message.chat.id, "Аргументы:\ngroup_number - номер группы")
+        return None
+    days = ['1day', '2day', '3day', '4day', '5day', '6day', '7day']
+    days2 = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье']
+    web_page = get_page(group)
+    today = datetime.fromtimestamp(message.date)
+    soup = BeautifulSoup(web_page, "html5lib")
+    if today.month >= 9:
+        first_sept = datetime(today.year, 9, 1)
+    else:
+        first_sept = datetime(today.year-1, 9, 1)
+    while True:
+        now = Time(today.hour, today. minute)
+        week = (today - first_sept).days // 7 % 2
+        if week == 0:
+            week = 2
+        schedule_table = soup.find("table", attrs={"id": days[today.weekday()]})
+        if schedule_table:
+            # Время проведения занятий
+            times_list = schedule_table.find_all("td", attrs={"class": "time"})
+            times_list = [time.span.text for time in times_list]
+            times_list_Time=[]
+            for time in times_list:
+                if time != 'День':
+                    time = time.split('-')
+                    time = time[0].split(':')
+                    times_list_Time.append(Time(int(time[0]), int(time[1])))
+                else:
+                    times_list_Time.append(Time(23,59))
+            #  Место проведения занятий
+            locations_list = schedule_table.find_all("td", attrs={"class": "room"})
+            locations_list = [room.span.text for room in locations_list]
+            # Название дисциплин и имена преподавателей
+            lessons_list = schedule_table.find_all("td", attrs={"class": "lesson"})
+            lessons_list = [lesson.text.split('\n\n') for lesson in lessons_list]
+            lessons_list = [', '.join([info for info in lesson_info if info]) for lesson_info in lessons_list]
+            # Аудитория
+            rooms_list = schedule_table.find_all("td", attrs={"class": "room"})
+            rooms_list = [room.dd.text for room in rooms_list]
+            for time, location, room, lession, time_Time in zip(times_list, locations_list, rooms_list, lessons_list, times_list_Time):
+                if week == 1:
+                    if lession.find('нечетная неделя') != -1 or lession.find('четная неделя') == -1 and time_Time >= now:
+                        resp = '<b>{}</b>, {},{} {}\n'.format(time, location, room, lession)
+                        bot.send_message(message.chat.id, days2[today.weekday()])
+                        bot.send_message(message.chat.id, resp, parse_mode='HTML')
+                        return None
+                elif time_Time >= now:
+                    if lession.find('нечетная неделя') == -1:
+                        resp = '<b>{}</b>, {},{} {}\n'.format(time, location, room, lession)
+                        bot.send_message(message.chat.id, days2[today.weekday()])
+                        bot.send_message(message.chat.id, resp, parse_mode='HTML')
+                        return None
+        today = today.replace(hour=0, minute=0, second=0)
+        today = today + timedelta(1)
 
 
-@bot.message_handler(commands=['tommorow'])
-def get_tommorow(message):
+@bot.message_handler(commands=['tomorrow'])
+def get_tomorrow(message):
     """ Получить расписание на следующий день """
-    # PUT YOUR CODE HERE
-    pass
+    parts = message.text.split()
+    if len(parts) == 2:
+        _, group = parts
+    else:
+        bot.send_message(message.chat.id, "Аргументы:\ngroup_number - номер группы")
+        return None
+    today = datetime.fromtimestamp(message.date)
+    tomorrow = today + timedelta(1)
+    days = ['/monday', '/tuesday', '/wednesday', '/thursday', '/friday', '/saturday', '/sunday']
+    if today.month >= 9:
+        first_sept = datetime(today.year, 9, 1)
+    else:
+        first_sept = datetime(today.year-1, 9, 1)
+    week = (tomorrow - first_sept).days // 7 % 2
+    if week == 0:
+        week = 2
+    message.text = '{} {} {}'.format(days[tomorrow.weekday()], group, week)
+    get_schedule(message)
 
 
 @bot.message_handler(commands=['all'])
@@ -98,7 +168,7 @@ def get_all_schedule(message):
     if len(parts) == 3:
         day, group, week = parts
         week = int(week)
-    elif parts == 2:
+    elif len(parts) == 2:
         week = 0
         day, group = parts
     else:
@@ -144,7 +214,6 @@ def get_all_schedule(message):
                     if lession.find('нечетная неделя') == -1:
                         resp += '<b>{}</b>, {},{} {}\n'.format(time, location, room, lession)
             bot.send_message(message.chat.id, resp, parse_mode='HTML')
-            sleep(0.1)
 
 
 
