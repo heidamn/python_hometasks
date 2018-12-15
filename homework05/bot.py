@@ -92,11 +92,13 @@ def get_near_lesson(message):
     soup = BeautifulSoup(web_page, "html5lib")
     if today.month >= 9:
         first_sept = datetime(today.year, 9, 1)
+        first_sept = first_sept - timedelta(first_sept.weekday())
     else:
         first_sept = datetime(today.year-1, 9, 1)
+        first_sept = first_sept - timedelta(first_sept.weekday())
     for _n in range(10):
         now = Time(today.hour, today. minute)
-        week = (today - first_sept).days // 7 % 2
+        week = ((today - first_sept).days // 7 + 1) % 2
         if week == 0:
             week = 2
         schedule_table = soup.find("table", attrs={"id": days[today.weekday()]})
@@ -153,9 +155,11 @@ def get_tomorrow(message):
     days = ['/monday', '/tuesday', '/wednesday', '/thursday', '/friday', '/saturday', '/sunday']
     if today.month >= 9:
         first_sept = datetime(today.year, 9, 1)
+        first_sept = first_sept - timedelta(first_sept.weekday())
     else:
         first_sept = datetime(today.year-1, 9, 1)
-    week = (tomorrow - first_sept).days // 7 % 2
+        first_sept = first_sept - timedelta(first_sept.weekday())
+    week = ((tomorrow - first_sept).days // 7 + 1) % 2
     if week == 0:
         week = 2
     message.text = '{} {} {}'.format(days[tomorrow.weekday()], group, week)
