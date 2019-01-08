@@ -41,7 +41,7 @@ class Network:
         :param to_person: Идентификатор второго пользователя
         """
         graph = igraph.Graph(self.friendships)
-        path = graph.get_shortest_paths(from_person, to=to_person)
+        path = graph.get_shortest_paths(from_person, to=to_person) # лучше будет нааписать алгоритм поиска самому, к ihraph могут придраться
         path_to_return = (path[0], len(path[0]))
         if not path[0]:
             path_to_return[0].append('пути не существует')
