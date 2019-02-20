@@ -2,4 +2,5 @@
 */.mypy_cache/
 */config.py
 */echo_bot.py
+*/news.db
 

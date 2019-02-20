@@ -1,20 +1,12 @@
 import requests
 from bs4 import BeautifulSoup
+import time
 
-"""
-{'author': 'evo_9',
-  'comments': 0,
-  'points': 1,
-  'title': 'Daily Action – Sign Up to Join the Resistance',
-  'url': 'https://dailyaction.org/'}
-  """
+
 def extract_news(parser):
     """ Extract news from a given web page """
     news_list = []
     tbl_list = parser.table.findAll('table')
-    tbl_list[1]
-    # 0 и затем каждый третий
-    # PUT YOUR CODE HERE
     posts = tbl_list[1].findAll("tr", attrs={'class': 'athing'})
     postsinfo = tbl_list[1].findAll("tr", attrs={'class': ''})
     for i in range(30):
@@ -36,7 +28,6 @@ def extract_news(parser):
 
 def extract_next_page(parser):
     """ Extract next page URL """
-    # PUT YOUR CODE HERE
     tbl_list = parser.table.findAll('table')
     next_page = tbl_list[1].findAll("tr", attrs={'class': ''})[30].a['href']
     return next_page
@@ -54,5 +45,6 @@ def get_news(url, n_pages=1):
         url = "https://news.ycombinator.com/" + next_page
         news.extend(news_list)
         n_pages -= 1
+        time.sleep(30)
     return news
 
