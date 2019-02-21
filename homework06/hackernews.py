@@ -48,7 +48,6 @@ def update_news():
 
 @route("/classify/")
 def classify_news():
-    # PUT YOUR CODE HERE
     pass
 
 
