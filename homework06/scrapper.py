@@ -1,6 +1,6 @@
+import time
 import requests
 from bs4 import BeautifulSoup
-import time
 
 
 def extract_news(parser):
@@ -51,4 +51,3 @@ def get_news(url, n_pages=1):
         if n_pages > 0:
             time.sleep(30)
     return news
-

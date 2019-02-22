@@ -1,5 +1,6 @@
 import math
 import csv
+import string
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.pipeline import Pipeline
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -7,7 +8,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 
 class NaiveBayesClassifier:
 
-    def __init__(self, alpha = 0.05):
+    def __init__(self, alpha=0.05):
         self.alpha = alpha
         self.table = {}
         self.labels = []
@@ -43,7 +44,7 @@ class NaiveBayesClassifier:
         for msg in X:
             predicted_nums = []
             msg = msg.split()
-            for i in range (len(self.labels)):
+            for i in range(len(self.labels)):
                 predicted_num = math.log(self.labels_part[i])
                 for word in msg:
                     if self.table.get(word):
@@ -65,21 +66,19 @@ class NaiveBayesClassifier:
         part /= len(X_test)
         return part
 
+
+def clean(s):
+    translator = str.maketrans("", "", string.punctuation)
+    return s.translate(translator)
+
+
 if __name__ == "__main__":
     with open("data/SMSSpamCollection") as f:
         data = list(csv.reader(f, delimiter="\t"))
-    import string
-
-
-    def clean(s):
-        translator = str.maketrans("", "", string.punctuation)
-        return s.translate(translator)
     X, y = [], []
     for target, msg in data:
         X.append(msg)
         y.append(target)
- #   X =["I love this sandwich", 'This is an amazing place', 'I feel very good about these beers', 'This is my best work', 'What an awesome view', 'I do not like this restaurant', 'I am tired of this stuff', 'I can t deal with this', 'He is my sworn enemy', 'My boss is horrible', 'The beer was good', 'I do not enjoy my job', 'I ain t feeling dandy today', 'I feel amazing', 'Gary is a friend of mine', 'I can t believe I m doing this']
- #   y =['Positive', 'Positive', 'Positive', 'Positive', 'Positive', 'Negative', 'Negative', 'Negative', 'Negative', 'Negative', 'Positive', 'Negative', 'Negative', 'Positive', 'Positive', 'Negative']
     X = [clean(x).lower() for x in X]
     X_train, y_train, X_test, y_test = X[:3900], y[:3900], X[3900:], y[3900:]
     model = NaiveBayesClassifier()

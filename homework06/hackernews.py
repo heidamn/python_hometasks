@@ -36,7 +36,6 @@ def update_news():
     news_list = get_news("https://news.ycombinator.com/newest")
     for news in news_list:
         if len(s.query(News).filter(News.title == news["title"], News.author == news['author']).all()) == 0:
-            print ('it works!')
             row = News(title=news['title'], author=news['author'], url=news['url'], comments=news['comments'], points=news['points'])
             s.add(row)
             s.commit()
@@ -54,7 +53,7 @@ def classify_news():
     X = [news.title for news in no_label]
     y = model.predict(X)
     good, maybe, never = [], [], []
-    for i,label in enumerate(y):
+    for i, label in enumerate(y):
         if label == 'good':
             good.append(no_label[i])
         elif label == 'maybe':
@@ -66,4 +65,3 @@ def classify_news():
 
 if __name__ == "__main__":
     run(host="localhost", port=8080)
-
