@@ -43,9 +43,25 @@ def update_news():
     redirect("/")
 
 
-@route("/classify/")
+@route("/classify")
 def classify_news():
-    pass
+    s = session()
+    X_train = [news.title for news in s.query(News).filter(News.label != None)]
+    y_train = [news.label for news in s.query(News).filter(News.label != None)]
+    model = NaiveBayesClassifier()
+    model.fit(X_train, y_train)
+    no_label = s.query(News).filter(News.label == None)
+    X = [news.title for news in no_label]
+    y = model.predict(X)
+    good, maybe, never = [], [], []
+    for i,label in enumerate(y):
+        if label == 'good':
+            good.append(no_label[i])
+        elif label == 'maybe':
+            maybe.append(no_label[i])
+        elif label == 'never':
+            never.append(no_label[i])
+    return template('news_recommendations', good=good, maybe=maybe, never=never)
 
 
 if __name__ == "__main__":
