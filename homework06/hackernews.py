@@ -24,9 +24,6 @@ def add_label():
     s = session()
     row = s.query(News).filter(News.id == id).one()
     # 3. Изменить значение метки записи на значение label
-    #s.delete(row)
-    #row = News(title=row.title, author=row.author, url=row.url, comments=row.comments, points=row.points, label=label)
-    #s.add(row)
     row.label = label
     # 4. Сохранить результат в БД
     s.commit()
@@ -52,5 +49,5 @@ def classify_news():
 
 
 if __name__ == "__main__":
-    run(host="localhost", port=8002)
+    run(host="localhost", port=8080)
 
