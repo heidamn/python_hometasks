@@ -19,7 +19,6 @@ def add_label():
     # 1. Получить значения параметров label и id из GET-запроса
     id = request.query.id
     label = request.query.label
-    print(id, label)
     # 2. Получить запись из БД с соответствующим id (такая запись только одна!)
     s = session()
     row = s.query(News).filter(News.id == id).one()
@@ -35,7 +34,7 @@ def update_news():
     s = session()
     news_list = get_news("https://news.ycombinator.com/newest")
     for news in news_list:
-        if len(s.query(News).filter(News.title == news["title"], News.author == news['author']).all()) == 0:
+        if s.query(News).filter(News.title == news["title"], News.author == news['author']).first():
             row = News(title=news['title'], author=news['author'], url=news['url'], comments=news['comments'], points=news['points'])
             s.add(row)
             s.commit()
