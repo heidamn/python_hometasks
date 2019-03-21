@@ -9,7 +9,7 @@ from heavyf import heavy_computation as f
 
 class ProcessPool():
 
-    def __init__(self, min_workers=1, max_workers=15, cpu_usage=0.5, max_mem_usage='1000000Mb'):
+    def __init__(self, min_workers=1, max_workers=15, cpu_usage=0.5, max_mem_usage='1gb'):
         max_mem_usage = max_mem_usage.lower()
         if max_mem_usage.endswith('gb'): self.max_mem_usage = int(max_mem_usage[:-2])
         elif max_mem_usage.endswith('mb'): self.max_mem_usage = int(max_mem_usage[:-2]) / 1000
@@ -39,11 +39,9 @@ class ProcessPool():
             mem = self.mem_usage_queue.get()
             mem_usage_list.append(mem)
         self.mem_usage = max(mem_usage_list)
-        print("вычисление mem_usage... завершено")
+        print("вычисление mem_usage завершено", self.mem_usage)
         if self.mem_usage > self.max_mem_usage:
             raise Exception('Your max_mem_usage is not enought')
-
-
         # вычисление колва процессов
         self.workers_num = int(self.max_mem_usage // self.mem_usage)
         if self.workers_num > self.max_workers:
@@ -68,11 +66,13 @@ class ProcessPool():
                 p.join(0.001)
                 if not p.is_alive(): #если вдруг процесс еще жив
                     print('процесс', p.pid, 'завершил работу')
+                    p.terminate()
                     if not data.empty():
                         print("создание нового процесса вместо старого")
-                        p = mp.Process(target=computations, name='test process', args=(data.get(),))
-                        p.start()
-                        p_list.append(p)
+                        p_list.remove(p)
+                        p2 = mp.Process(target=computations, args=(data.get(),))
+                        p2.start()
+                        p_list.append(p2)
                     else:
                         for p2 in p_list: #ожидание завершения всех процессов
                             p2.join()
@@ -95,25 +95,7 @@ class ProcessPool():
 
 if __name__ == '__main__':
     a = mp.Queue()
-    a.put(1000)
-    a.put(500)
-    a.put(500)
-    a.put(500)
-    a.put(1000)
-    a.put(1000)
-    a.put(500)
-    a.put(500)
-    a.put(500)
-    a.put(1000)
-    a.put(1000)
-    a.put(500)
-    a.put(500)
-    a.put(500)
-    a.put(1000)
-    a.put(1000)
-    a.put(500)
-    a.put(500)
-    a.put(500)
-    a.put(1000)
-    w = ProcessPool(max_mem_usage='1B')
+    for i in range(50):
+        a.put(i * 100)
+    w = ProcessPool(max_mem_usage='1gB')
     print(w.map(f, a))
