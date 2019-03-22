@@ -50,13 +50,13 @@ class ProcessPool():
         self.mem_usage = max(mem_usage_list)
         print("вычисление mem_usage завершено", self.mem_usage)
         if self.mem_usage > self.max_mem_usage:
-            raise Exception('Your max_mem_usage is not enought')
+            raise Warning('Your max_mem_usage is not enought')
         # вычисление колва процессов
         self.workers_num = int(self.max_mem_usage // self.mem_usage)
         if self.workers_num > self.max_workers:
             self.workers_num = self.max_workers
         elif self.workers_num < self.min_workers:
-            raise Exception('Your min_workers is too big')
+            raise Warning('Your min_workers is too big')
         # запуск пула процессов
         print("запуск пула")
         for _ in range(self.workers_num):
