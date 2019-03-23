@@ -48,7 +48,7 @@ class TestProcessPool(unittest.TestCase):
         q.put(20)
         pool.map(heavy_computation, q)
         self.assertEqual(pool.workers_num, 1)
-        
+
 
 
 if __name__ == '__main__':

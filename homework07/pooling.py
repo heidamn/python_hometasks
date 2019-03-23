@@ -31,6 +31,8 @@ class ProcessPool():
         self.workers_num = 0
         self.mem_usage = 0
         self.mem_usage_queue = mp.Queue()
+        if self.min_workers > self.max_workers:
+            raise Warning('Your max < min')
 
     def map(self, computations, data):
         """ Рассчет количества процессов и запуск пула"""
@@ -43,29 +45,26 @@ class ProcessPool():
         p.join()
         p_m.join()
         mem_usage_list = []
-        print("вычисление mem_usage...")
         while not self.mem_usage_queue.empty():
             mem = self.mem_usage_queue.get()
             mem_usage_list.append(mem)
         self.mem_usage = max(mem_usage_list)
-        print("вычисление mem_usage завершено", self.mem_usage)
         if self.mem_usage > self.max_mem_usage:
             raise Warning('Your max_mem_usage is not enought')
         # вычисление колва процессов
         self.workers_num = int(self.max_mem_usage // self.mem_usage)
+        if not self.workers_num:
+            self.workers_num = 0.0001
         if self.workers_num > self.max_workers:
             self.workers_num = self.max_workers
         elif self.workers_num < self.min_workers:
             raise Warning('Your min_workers is too big')
         # запуск пула процессов
-        print("запуск пула")
         for _ in range(self.workers_num):
             if not data.empty():
-                print("создание нового процесса")
                 p = mp.Process(target=computations, args=(data.get(),))
                 p.start()
                 p_list.append(p)
-                print(p.pid)
             else:
                 for p2 in p_list:  # ожидание завершения всех процессов
                     p2.join()
@@ -74,10 +73,8 @@ class ProcessPool():
             for p in p_list:
                 p.join(0.001)
                 if not p.is_alive():  # если вдруг процесс еще жив
-                    print('процесс', p.pid, 'завершил работу')
                     p.terminate()
                     if not data.empty():
-                        print("создание нового процесса вместо старого")
                         p_list.remove(p)
                         p2 = mp.Process(target=computations, args=(data.get(),))
                         p2.start()
@@ -89,7 +86,6 @@ class ProcessPool():
 
     def mem_testing(self, pid):
         """ Рассчет требуемой памяти"""
-        print("создание mem_usage_queue...")
         p_psutil = psutil.Process(pid)
         while psutil.pid_exists(pid):
             try:
@@ -97,12 +93,12 @@ class ProcessPool():
             except:
                 pass
             time.sleep(0.01)
-        print("создание mem_usage_queue завершено")
+
 
 
 if __name__ == '__main__':
     queue = mp.Queue()
-    for i in range(50):
+    for i in range(20):
         queue.put(i * 100)
-    pool = ProcessPool(max_mem_usage='1gB')
+    pool = ProcessPool(max_mem_usage='2gB')
     print(pool.map(f, queue))
