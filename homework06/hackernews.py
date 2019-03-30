@@ -63,4 +63,4 @@ def classify_news():
 
 
 if __name__ == "__main__":
-    run(host="localhost", port=8080)
+    run(host="localhost", port=8000)

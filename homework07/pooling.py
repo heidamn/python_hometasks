@@ -5,15 +5,27 @@
     """
 
 import time
+import threading as th
 import multiprocessing as mp
 import psutil
 from heavyf import heavy_computation as f
 
 
-class ProcessPool():
+class ProcessPool:
     """ Реализация пула процессов с учетом памяти, потребляемой одним процессом"""
 
     def __init__(self, min_workers=1, max_workers=15, max_mem_usage='1gb'):
+        self.max_mem_comp(max_mem_usage)
+        self.min_workers = min_workers
+        self.max_workers = max_workers
+        #  self.cpu_usage = cpu_usage
+        self.workers_num = 0
+        self.mem_usage = 0
+        self.mem_usage_list = []
+        if self.min_workers > self.max_workers:
+            raise Warning('Your max < min')
+
+    def max_mem_comp(self, max_mem_usage):
         max_mem_usage = max_mem_usage.lower()
         if max_mem_usage.endswith('gb'):
             self.max_mem_usage = int(max_mem_usage[:-2])
@@ -25,14 +37,6 @@ class ProcessPool():
             self.max_mem_usage = int(max_mem_usage[:-1]) // 1000000 / 1000
         else:
             self.max_mem_usage = int(max_mem_usage)
-        self.min_workers = min_workers
-        self.max_workers = max_workers
-        #  self.cpu_usage = cpu_usage
-        self.workers_num = 0
-        self.mem_usage = 0
-        self.mem_usage_queue = mp.Queue()
-        if self.min_workers > self.max_workers:
-            raise Warning('Your max < min')
 
     def map(self, computations, data):
         """ Рассчет количества процессов и запуск пула"""
@@ -40,15 +44,11 @@ class ProcessPool():
         p_list = []
         p = mp.Process(target=computations, name='test process', args=(data.get(),))
         p.start()
-        p_m = mp.Process(target=self.mem_testing, name='test mem', args=(p.pid,))
+        p_m = th.Thread(target=self.mem_testing, name='test mem', args=(p.pid,))
         p_m.start()
         p.join()
         p_m.join()
-        mem_usage_list = []
-        while not self.mem_usage_queue.empty():
-            mem = self.mem_usage_queue.get()
-            mem_usage_list.append(mem)
-        self.mem_usage = max(mem_usage_list)
+        self.mem_usage = max(self.mem_usage_list)
         if self.mem_usage > self.max_mem_usage:
             raise Warning('Your max_mem_usage is not enought')
         # вычисление колва процессов
@@ -89,7 +89,8 @@ class ProcessPool():
         p_psutil = psutil.Process(pid)
         while psutil.pid_exists(pid):
             try:
-                self.mem_usage_queue.put(p_psutil.memory_info().rss // 1000000 / 1000)
+                # SWAP
+                self.mem_usage_list.append(p_psutil.memory_info().rss // 1000000 / 1000)
             except:
                 pass
             time.sleep(0.01)
