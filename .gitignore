@@ -4,11 +4,11 @@
 */config.py
 */echo_bot.py
 */news.db
-homework08/elevennote/src/config/settings/settings.ini
-homework08/elevennote/elevennote-env
 elevennote/notes/
 elevennote/*/__pycache__/
 elevennote/*/*/__pycache__/
 elevennote/*/*/*/__pycache__/
 elevennote/src/db.sqlite3
 elevennote/src/config/settings/settings.ini
+cluster/examples/_*
+cluster/_*

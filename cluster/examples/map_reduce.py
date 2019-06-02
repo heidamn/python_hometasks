@@ -1,4 +1,4 @@
-# a version of word frequency example from mapreduce tutorial
+# working map_reduce example from dispy documentation
 
 
 def mapper(doc):
